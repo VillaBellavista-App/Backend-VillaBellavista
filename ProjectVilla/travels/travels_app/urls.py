@@ -4,6 +4,11 @@ from travels_app import views
 
 urlpatterns = [
     
+    #------ USER URLs ------#
+    path('user/list', views.UserList.as_view(), name='user-list'),
+    path('user/create', views.UserCreate.as_view(), name='user-create'),
+    path('user/authenticate/<str:email>/<str:password>', views.UserLogin.as_view(), name='user-login'),
+    
     #------ VEHICULES URLs ------#
     path('vehicules/list', views.VehiculesList.as_view(), name='vehicule-list'),
     path('vehicules/<int:pk>', views.VehiculesListDetail.as_view(), name='vehicules-detail'),
@@ -16,6 +21,14 @@ urlpatterns = [
     
      #------ DESTINATION URLs ------#
     path('destination/list', views.DestinationList.as_view(), name='destination-list'),
-    path('destination/<int:pk>', views.DestinationDestroy.as_view(), name='destination-detail'),
+    path('destination/<int:pk>', views.DestinationDestroy.as_view(), name='destination-delete'),
     path('destination/create', views.DestinationCreate.as_view(), name='destination-create'),
+
+    #------ TICKET URLs ------#
+    path('ticket/list', views.TicketList.as_view(), name='ticket-list'),
+    path('ticket/create', views.TicketCreate.as_view(), name='ticket-create'),
+    
+    #------ TARIFA URLs ------#
+    path('tarifa/list', views.TarifaList.as_view(), name='ticket-list'),
+
 ]

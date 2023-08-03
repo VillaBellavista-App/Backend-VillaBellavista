@@ -1,7 +1,16 @@
 from rest_framework import serializers
 
-from travels_app.models import Owner, Vehicule, Destination
+from travels_app.models import Owner, Vehicule, Destination, Ticket, Tarifa, User
 
+
+# ------------- VEHICULES SERIALIZERS -----------------
+
+class UserListSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = '__all__'
+        
 # ------------- VEHICULES SERIALIZERS -----------------
 
 class VehiculesListSerializer(serializers.ModelSerializer):
@@ -35,4 +44,33 @@ class DestinationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Destination
+        fields = '__all__'
+
+# ------------- TICKET SERIALIZERS -----------------
+
+class TicketListSerializer(serializers.ModelSerializer):
+    
+    tic_placa = serializers.CharField(read_only = True, source='tic_vehiculo.veh_placa')
+    tic_categoria = serializers.CharField(read_only = True, source='tic_vehiculo.veh_categoria')
+    tic_propietario = serializers.CharField(read_only = True, source='tic_vehiculo.veh_propietario.prop_nombre')
+    tic_destino = serializers.CharField(read_only = True, source='tic_vehiculo.veh_destino.des_nombre')
+    tarifa_quantity = serializers.IntegerField(read_only = True, source='tic_tarifa.tar_tarifa')
+    
+    class Meta:
+        model = Ticket
+        fields = ['tic_id', 'tic_hora', 'tic_destino', 'tic_propietario',
+                  'tic_placa', 'tic_categoria', 'tic_tarifa', 'tarifa_quantity']
+
+class TicketCreateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Ticket
+        fields = '__all__'
+
+# ------------- TARIFA SERIALIZERS -----------------
+
+class TarifaListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tarifa
         fields = '__all__'
