@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from travels_app.models import Owner, Vehicule, Destination, Ticket, Tarifa, User
 
-from travels_app.serializers import VehiculesListSerializer, VehiculesCreateSerializer, OwnersListSerializer, DestinationListSerializer, TicketListSerializer, TarifaListSerializer, UserListSerializer
+from travels_app.serializers import VehiculesListSerializer, VehiculesCreateSerializer, OwnersListSerializer, DestinationListSerializer, TicketListSerializer, TarifaListSerializer, UserListSerializer, TicketCreateSerializer
 
 from rest_framework import generics, status
 
@@ -55,16 +55,13 @@ class VehiculesCreate(generics.CreateAPIView):
         return Vehicule.objects.all()
         
     def post(self, request):
-        
-        # You can customize this method
+    
         owner_id = Owner.objects.values('prop_id').get(prop_nombre = request.data['owner_name'])
         dest_id = Destination.objects.values('des_id').get(des_nombre = request.data['destino_name'])
 
-        # Obtener o crear la instancia de Owner y Destination si no existen
         owner_name = request.data.pop('owner_name')
         destino_name = request.data.pop('destino_name')
             
-        # Asignar las instancias de Owner y Destination a los campos veh_propietario y veh_destino
         request.data['veh_propietario'] = owner_id['prop_id']
         request.data['veh_destino'] = dest_id['des_id']
         
@@ -129,36 +126,40 @@ class TicketList(generics.ListAPIView):
     serializer_class = TicketListSerializer
         
 class TicketCreate(generics.CreateAPIView):
+    serializer_class = TicketCreateSerializer
     
-    serializer_class = TicketListSerializer
-
     def post(self, request):
-        self.vehicule_id = request.data['vehicule_id']
-        data = Vehicule.objects.values('veh_categoria', 'veh_nro_asientos', 'veh_destino').get(veh_id = self.vehicule_id)
-        dest_name = Destination.objects.values('des_nombre').get(des_id = data['veh_destino'])
+        serializer = TicketCreateSerializer(data = request.data)
         
-        tarifa_id = 0
-        
-        if data['veh_categoria'] == 'M1':
-            if dest_name['des_nombre'] == 'Juanjui':
-                tarifa_id = 4 
-            else:
-                if data['veh_nro_asientos'] == 4:
-                    tarifa_id = 2 
-                elif data['veh_nro_asientos'] == 6:
-                    tarifa_id = 3
+        if serializer.is_valid():
+            print(serializer.data)
+            self.vehicule_id = serializer.data['vehicule_id']
+            data = Vehicule.objects.values('veh_categoria', 'veh_nro_asientos', 'veh_destino').get(veh_id = self.vehicule_id)
+            
+            dest_name = Destination.objects.values('des_nombre').get(des_id = data['veh_destino'])
+            
+            tarifa_id = 0
+            
+            if data['veh_categoria'] == 'M1':
+                if dest_name['des_nombre'] == 'Juanjui':
+                    tarifa_id = 4 
                 else:
-                    print("NO ENTRE A NINGUN CONDICIONAL -- ERROR !!!")
+                    if data['veh_nro_asientos'] == 4:
+                        tarifa_id = 2 
+                    elif data['veh_nro_asientos'] == 6:
+                        tarifa_id = 3
+                    else:
+                        print("NO ENTRE A NINGUN CONDICIONAL -- ERROR !!!")
+            else:
+                tarifa_id = 1
+            
+            new_ticket = Ticket(tic_vehiculo_id = self.vehicule_id, tic_tarifa_id = tarifa_id)
+            new_ticket.save()
+            
+            content = {"The ticket was successfully created"}
+            return Response(content, status=status.HTTP_200_OK)
         else:
-            tarifa_id = 1
-
-        new_ticket = Ticket(tic_vehiculo_id = self.vehicule_id, tic_tarifa_id = tarifa_id)
-        new_ticket.save()
-        
-        content = {"The ticket was successfully created"}
-        return Response(content, status=status.HTTP_200_OK)
-        
-        #FALTA UN RAISE DE ERROR PARA QUE DEVULEVA HTTP_400_BAD_REQUEST
+            raise serializer.ValidationError("The ticket was not created")
         
 class TarifaList(generics.ListAPIView):
     queryset = Tarifa.objects.all()

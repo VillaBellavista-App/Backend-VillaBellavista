@@ -62,10 +62,12 @@ class TicketListSerializer(serializers.ModelSerializer):
                   'tic_placa', 'tic_categoria', 'tic_tarifa', 'tarifa_quantity']
 
 class TicketCreateSerializer(serializers.ModelSerializer):
+
+    vehicule_id = serializers.IntegerField(source='tic_vehiculo.veh_id')
     
     class Meta:
         model = Ticket
-        fields = '__all__'
+        fields = ['vehicule_id']
 
 # ------------- TARIFA SERIALIZERS -----------------
 
