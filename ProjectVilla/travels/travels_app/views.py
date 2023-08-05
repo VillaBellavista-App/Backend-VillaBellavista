@@ -49,12 +49,27 @@ class VehiculesListDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class VehiculesCreate(generics.CreateAPIView):
     serializer_class = VehiculesCreateSerializer
-
+    permission_classes = []
+    
     def get_queryset(self):
         return Vehicule.objects.all()
-
+        
     def post(self, request):
-        serializer = VehiculesCreateSerializer(data = request.data)
+        
+        # You can customize this method
+        owner_id = Owner.objects.values('prop_id').get(prop_nombre = request.data['owner_name'])
+        dest_id = Destination.objects.values('des_id').get(des_nombre = request.data['destino_name'])
+
+        # Obtener o crear la instancia de Owner y Destination si no existen
+        owner_name = request.data.pop('owner_name')
+        destino_name = request.data.pop('destino_name')
+            
+        # Asignar las instancias de Owner y Destination a los campos veh_propietario y veh_destino
+        request.data['veh_propietario'] = owner_id['prop_id']
+        request.data['veh_destino'] = dest_id['des_id']
+        
+        serializer = VehiculesCreateSerializer(data = request.data) 
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
