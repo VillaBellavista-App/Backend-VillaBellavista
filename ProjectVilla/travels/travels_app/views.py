@@ -55,7 +55,7 @@ class VehiculesCreate(generics.CreateAPIView):
         return Vehicule.objects.all()
         
     def post(self, request):
-    
+        #print(request.data)
         owner_id = Owner.objects.values('prop_id').get(prop_nombre = request.data['owner_name'])
         dest_id = Destination.objects.values('des_id').get(des_nombre = request.data['destino_name'])
 

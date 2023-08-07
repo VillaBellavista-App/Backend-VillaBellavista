@@ -29,6 +29,6 @@ urlpatterns = [
     path('ticket/create', views.TicketCreate.as_view(), name='ticket-create'),
     
     #------ TARIFA URLs ------#
-    path('tarifa/list', views.TarifaList.as_view(), name='ticket-list'),
+    path('tarifa/list', views.TarifaList.as_view(), name='tarifa-list'),
 
 ]

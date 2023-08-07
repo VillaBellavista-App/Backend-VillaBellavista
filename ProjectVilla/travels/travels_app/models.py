@@ -17,8 +17,8 @@ class Vehicule(models.Model):
     veh_id = models.SmallAutoField(primary_key=True)
     veh_placa = models.CharField(max_length=50)
     
-    veh_propietario = models.ForeignKey('Owner', models.DO_NOTHING, db_column='veh_propietario')
-    veh_destino = models.ForeignKey('Destination', models.DO_NOTHING, db_column='veh_destino')
+    veh_propietario = models.ForeignKey('Owner', models.CASCADE, db_column='veh_propietario')
+    veh_destino = models.ForeignKey('Destination', models.CASCADE, db_column='veh_destino')
     
     veh_categoria = models.CharField(max_length=3)
     veh_marca = models.CharField(max_length=50)
@@ -32,8 +32,8 @@ class Vehicule(models.Model):
 class Ticket(models.Model):
     tic_id = models.SmallAutoField(primary_key=True)
     tic_hora = models.DateTimeField(auto_now_add=True) 
-    tic_vehiculo = models.ForeignKey('Vehicule', models.DO_NOTHING, db_column='tic_vehiculo')
-    tic_tarifa = models.ForeignKey('Tarifa', models.DO_NOTHING, db_column='tic_tarifa')
+    tic_vehiculo = models.ForeignKey('Vehicule', models.CASCADE, db_column='tic_vehiculo')
+    tic_tarifa = models.ForeignKey('Tarifa', models.CASCADE, db_column='tic_tarifa')
     
     def __str__(self):
         return self.tic_vehiculo.veh_placa
