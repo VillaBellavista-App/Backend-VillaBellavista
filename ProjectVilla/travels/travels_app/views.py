@@ -160,7 +160,13 @@ class TicketCreate(generics.CreateAPIView):
             return Response(content, status=status.HTTP_200_OK)
         else:
             raise serializer.ValidationError("The ticket was not created")
-        
+
+class TicketListDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketListSerializer
+
+# ------------- TARIFA SECTION -----------------
+      
 class TarifaList(generics.ListAPIView):
     queryset = Tarifa.objects.all()
     serializer_class = TarifaListSerializer
