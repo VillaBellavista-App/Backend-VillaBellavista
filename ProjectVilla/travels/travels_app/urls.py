@@ -13,6 +13,7 @@ urlpatterns = [
     path('vehicules/list', views.VehiculesList.as_view(), name='vehicule-list'),
     path('vehicules/<int:pk>', views.VehiculesListDetail.as_view(), name='vehicules-detail'),
     path('vehicules/create', views.VehiculesCreate.as_view(), name='vehicules-create'),
+    path('vehicules/plate/<str:placa>', views.VehiculesByPlate.as_view(), name='vehicules-plate'),
     
     #------ OWNERS URLs ------#
     path('owners/list', views.OwnersList.as_view(), name='owners-list'),

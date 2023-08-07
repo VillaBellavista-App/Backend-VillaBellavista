@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from travels_app.models import Owner, Vehicule, Destination, Ticket, Tarifa, User
+from rest_framework.exceptions import ValidationError
 
 
 # ------------- VEHICULES SERIALIZERS -----------------

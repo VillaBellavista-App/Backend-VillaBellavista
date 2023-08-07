@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 
 from rest_framework.response import Response
 
+from rest_framework.exceptions import ValidationError
+
 # ------------- USERS SECTION -----------------
 
 class UserList(generics.ListAPIView):
@@ -42,6 +44,14 @@ class UserLogin(generics.ListAPIView):
 class VehiculesList(generics.ListAPIView):
     queryset = Vehicule.objects.all()
     serializer_class = VehiculesListSerializer
+    
+class VehiculesByPlate(generics.ListAPIView):
+    queryset = Vehicule.objects.all()
+    serializer_class = VehiculesListSerializer
+     
+    def get_queryset(self):
+        return Vehicule.objects.filter(veh_placa = self.kwargs['placa'])
+
 
 class VehiculesListDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vehicule.objects.all()
@@ -130,6 +140,8 @@ class TicketCreate(generics.CreateAPIView):
     
     def post(self, request):
         serializer = TicketCreateSerializer(data = request.data)
+        
+        print(request.data)
         
         if serializer.is_valid():
             print(serializer.data)
