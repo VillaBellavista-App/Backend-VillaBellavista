@@ -25,6 +25,7 @@ class Vehicule(models.Model):
     veh_modelo = models.CharField(max_length=50)
     veh_anio_fabricacion = models.IntegerField()
     veh_nro_asientos = models.IntegerField()
+    #veh_owner = models.CharField(max_length=50)
 
     def __str__(self):
         return self.veh_placa
