@@ -44,7 +44,7 @@ class UserLogin(generics.ListAPIView):
 class VehiculesList(generics.ListAPIView):
     queryset = Vehicule.objects.all()
     serializer_class = VehiculesListSerializer
-    
+
 class VehiculesByPlate(generics.ListAPIView):
     queryset = Vehicule.objects.all()
     serializer_class = VehiculesListSerializer
@@ -52,11 +52,10 @@ class VehiculesByPlate(generics.ListAPIView):
     def get_queryset(self):
         return Vehicule.objects.filter(veh_placa = self.kwargs['placa'])
 
-
 class VehiculesListDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vehicule.objects.all()
     serializer_class = VehiculesListSerializer
-
+    
 class VehiculesCreate(generics.CreateAPIView):
     serializer_class = VehiculesCreateSerializer
     permission_classes = []
@@ -134,7 +133,7 @@ class DestinationDestroy(generics.DestroyAPIView):
 class TicketList(generics.ListAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketListSerializer
-        
+
 class TicketCreate(generics.CreateAPIView):
     serializer_class = TicketCreateSerializer
     

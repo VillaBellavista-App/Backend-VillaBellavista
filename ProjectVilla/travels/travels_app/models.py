@@ -55,13 +55,21 @@ class Destination(models.Model):
     
     def __str__(self):
         return self.des_nombre
+
+class Role(models.Model):
+    role_id = models.SmallAutoField(primary_key=True)
+    role_name = models.CharField(max_length=30)
     
+    def __str__(self):
+        return self.role_name
+      
 class User(models.Model):
     user_id = models.SmallAutoField(primary_key=True)
     user_nombre = models.CharField(max_length=20)
     user_apellidos = models.CharField(max_length=20)
     user_email = models.CharField(max_length=30)
     user_password = models.CharField(max_length=20)
+    user_role = models.ForeignKey('Role', models.DO_NOTHING, db_column='user_role', default=1)
     
     def __str__(self):
         return self.user_nombre
