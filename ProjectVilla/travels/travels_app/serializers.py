@@ -69,6 +69,12 @@ class TicketCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ['vehicule_id']
+        
+class TicketCountSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ticket
+        fields = ['tic_id', 'tic_hora']
 
 # ------------- TARIFA SERIALIZERS -----------------
 

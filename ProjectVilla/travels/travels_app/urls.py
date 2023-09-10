@@ -2,6 +2,9 @@ from django.urls import path, include
 
 from travels_app import views
 
+from django.db.models import Count
+from datetime import datetime
+
 urlpatterns = [
     
     #------ USER URLs ------#
@@ -29,6 +32,7 @@ urlpatterns = [
     path('ticket/list', views.TicketList.as_view(), name='ticket-list'),
     path('ticket/<int:pk>', views.TicketListDetail.as_view(), name='ticket-detail'),
     path('ticket/create', views.TicketCreate.as_view(), name='ticket-create'),
+    path('ticket/count', views.TicketCountMonth.as_view(), name='ticket-count'),
     
     #------ TARIFA URLs ------#
     path('tarifa/list', views.TarifaList.as_view(), name='tarifa-list'),

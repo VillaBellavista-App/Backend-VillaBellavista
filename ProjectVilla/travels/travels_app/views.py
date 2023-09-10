@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from travels_app.models import Owner, Vehicule, Destination, Ticket, Tarifa, User
 
-from travels_app.serializers import VehiculesListSerializer, VehiculesCreateSerializer, OwnersListSerializer, DestinationListSerializer, TicketListSerializer, TarifaListSerializer, UserListSerializer, TicketCreateSerializer
+from travels_app.serializers import VehiculesListSerializer, VehiculesCreateSerializer, OwnersListSerializer, DestinationListSerializer, TicketListSerializer, TarifaListSerializer, UserListSerializer, TicketCreateSerializer, TicketCountSerializer
 
 from rest_framework import generics, status
 
@@ -11,6 +11,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from rest_framework.exceptions import ValidationError
+
+from datetime import datetime
+
+from django.db.models import Count
 
 # ------------- USERS SECTION -----------------
 
@@ -137,6 +141,9 @@ class TicketList(generics.ListAPIView):
 class TicketCreate(generics.CreateAPIView):
     serializer_class = TicketCreateSerializer
     
+    def formatted_tic_hora(hour):
+        return hour.strftime("%Y-%m-%d %H:%M:%S")
+    
     def post(self, request):
         serializer = TicketCreateSerializer(data = request.data)
         
@@ -153,16 +160,17 @@ class TicketCreate(generics.CreateAPIView):
             
             if data['veh_categoria'] == 'M1':
                 if dest_name['des_nombre'] == 'Juanjui':
-                    tarifa_id = 4 
+                    tarifa_id = 4 #M1 -- 9 soles -- Juanjui
                 else:
                     if data['veh_nro_asientos'] == 4:
-                        tarifa_id = 2 
+                        tarifa_id = 2 #M1 -- 6 soles -- 4 asientos
                     elif data['veh_nro_asientos'] == 6:
-                        tarifa_id = 3
+                        tarifa_id = 3 #M1 -- 8 soles -- 6 asientos
                     else:
                         print("NO ENTRE A NINGUN CONDICIONAL -- ERROR !!!")
             else:
-                tarifa_id = 1
+                tarifa_id = 1 #N1 -- 15 soles
+            
             
             new_ticket = Ticket(tic_vehiculo_id = self.vehicule_id, tic_tarifa_id = tarifa_id)
             new_ticket.save()
@@ -175,6 +183,32 @@ class TicketCreate(generics.CreateAPIView):
 class TicketListDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketListSerializer
+
+class TicketCountMonth(generics.ListAPIView):
+    serializer_class = TicketCountSerializer 
+
+    def get_queryset(self):
+        # Obtén el mes actual
+        now = datetime.now()
+        current_month = now.month
+
+        # Consulta para contar los tickets por mes
+        tickets_por_mes = Ticket.objects.filter(tic_hora__month = current_month) \
+            .values('tic_hora__month') \
+            .annotate(total_tickets = Count('tic_id'))
+
+        # Crea un arreglo para guardar los resultados
+        tickets_por_mes_array = []
+
+        # Llena el arreglo con los resultados
+        for item in tickets_por_mes:
+            tickets_por_mes_array.append({
+                'mes': item['tic_hora__month'],
+                'total_tickets': item['total_tickets']
+            })
+
+        # Devuelve el arreglo como queryset
+        return tickets_por_mes_array
 
 # ------------- TARIFA SECTION -----------------
       

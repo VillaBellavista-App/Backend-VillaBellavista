@@ -1,6 +1,12 @@
 from django.db import models
+from datetime import date, datetime
 
-# Create your models here.
+# Functions for models
+
+def get_current_time():
+    return datetime.now().time()
+
+# Models 
 
 class Owner(models.Model):
     prop_id = models.SmallAutoField(primary_key=True)
@@ -29,10 +35,11 @@ class Vehicule(models.Model):
 
     def __str__(self):
         return self.veh_placa
-    
+
 class Ticket(models.Model):
     tic_id = models.SmallAutoField(primary_key=True)
-    tic_hora = models.DateTimeField(auto_now_add=True) 
+    tic_fecha = models.DateField(default=date.today)
+    tic_hora = models.TimeField(default=get_current_time)
     tic_vehiculo = models.ForeignKey('Vehicule', models.DO_NOTHING, db_column='tic_vehiculo')
     tic_tarifa = models.ForeignKey('Tarifa', models.DO_NOTHING, db_column='tic_tarifa')
     
