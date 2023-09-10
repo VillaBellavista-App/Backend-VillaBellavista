@@ -171,7 +171,7 @@ class TicketCreate(generics.CreateAPIView):
             else:
                 tarifa_id = 1 #N1 -- 15 soles
             
-            
+            print(self.vehicule_id, tarifa_id)
             new_ticket = Ticket(tic_vehiculo_id = self.vehicule_id, tic_tarifa_id = tarifa_id)
             new_ticket.save()
             

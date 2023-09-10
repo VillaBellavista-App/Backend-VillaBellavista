@@ -59,7 +59,7 @@ class TicketListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Ticket
-        fields = ['tic_id', 'tic_hora', 'tic_destino', 'tic_propietario',
+        fields = ['tic_id', 'tic_fecha', 'tic_hora', 'tic_destino', 'tic_propietario',
                   'tic_placa', 'tic_categoria', 'tic_tarifa', 'tarifa_quantity']
 
 class TicketCreateSerializer(serializers.ModelSerializer):
