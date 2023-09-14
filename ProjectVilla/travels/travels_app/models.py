@@ -38,7 +38,7 @@ class Vehicule(models.Model):
 
 class Ticket(models.Model):
     tic_id = models.SmallAutoField(primary_key=True)
-    tic_fecha = models.DateField(default=date.today)
+    tic_fecha = models.DateField(default=date.today) #default=date.today
     tic_hora = models.TimeField(default=get_current_time)
     tic_vehiculo = models.ForeignKey('Vehicule', models.DO_NOTHING, db_column='tic_vehiculo')
     tic_tarifa = models.ForeignKey('Tarifa', models.DO_NOTHING, db_column='tic_tarifa')

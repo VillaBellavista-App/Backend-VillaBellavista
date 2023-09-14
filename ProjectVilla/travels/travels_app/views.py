@@ -6,15 +6,13 @@ from travels_app.serializers import VehiculesListSerializer, VehiculesCreateSeri
 
 from rest_framework import generics, status
 
-from rest_framework.views import APIView
-
 from rest_framework.response import Response
 
-from rest_framework.exceptions import ValidationError
-
-from datetime import datetime
-
 from django.db.models import Count
+
+from django.db.models.functions import TruncMonth
+
+from datetime import datetime, timedelta
 
 # ------------- USERS SECTION -----------------
 
@@ -141,19 +139,16 @@ class TicketList(generics.ListAPIView):
 class TicketCreate(generics.CreateAPIView):
     serializer_class = TicketCreateSerializer
     
-    def formatted_tic_hora(hour):
-        return hour.strftime("%Y-%m-%d %H:%M:%S")
-    
     def post(self, request):
         serializer = TicketCreateSerializer(data = request.data)
         
-        print(request.data)
+        #print(request.data)
         
         if serializer.is_valid():
-            print(serializer.data)
+            #print(serializer.data)
             self.vehicule_id = serializer.data['vehicule_id']
             data = Vehicule.objects.values('veh_categoria', 'veh_nro_asientos', 'veh_destino').get(veh_id = self.vehicule_id)
-            
+    
             dest_name = Destination.objects.values('des_nombre').get(des_id = data['veh_destino'])
             
             tarifa_id = 0
@@ -171,44 +166,27 @@ class TicketCreate(generics.CreateAPIView):
             else:
                 tarifa_id = 1 #N1 -- 15 soles
             
-            print(self.vehicule_id, tarifa_id)
+            print("Vehicule ID: ", self.vehicule_id)
+            print("Tarifa ID: ", tarifa_id)
+            
             new_ticket = Ticket(tic_vehiculo_id = self.vehicule_id, tic_tarifa_id = tarifa_id)
+            
+            print("New Ticket: ", new_ticket)
+            
             new_ticket.save()
             
             content = {"The ticket was successfully created"}
             return Response(content, status=status.HTTP_200_OK)
         else:
-            raise serializer.ValidationError("The ticket was not created")
+            raise Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 class TicketListDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketListSerializer
 
-class TicketCountMonth(generics.ListAPIView):
-    serializer_class = TicketCountSerializer 
-
-    def get_queryset(self):
-        # Obtén el mes actual
-        now = datetime.now()
-        current_month = now.month
-
-        # Consulta para contar los tickets por mes
-        tickets_por_mes = Ticket.objects.filter(tic_hora__month = current_month) \
-            .values('tic_hora__month') \
-            .annotate(total_tickets = Count('tic_id'))
-
-        # Crea un arreglo para guardar los resultados
-        tickets_por_mes_array = []
-
-        # Llena el arreglo con los resultados
-        for item in tickets_por_mes:
-            tickets_por_mes_array.append({
-                'mes': item['tic_hora__month'],
-                'total_tickets': item['total_tickets']
-            })
-
-        # Devuelve el arreglo como queryset
-        return tickets_por_mes_array
+class TicketCount(generics.ListAPIView):
+    queryset = Ticket.objects.annotate(month=TruncMonth('tic_fecha')).values('month').annotate(ticket_count=Count('tic_id')).order_by('month')
+    serializer_class = TicketCountSerializer
 
 # ------------- TARIFA SECTION -----------------
       

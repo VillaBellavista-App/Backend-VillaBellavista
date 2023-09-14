@@ -70,12 +70,14 @@ class TicketCreateSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = ['vehicule_id']
         
-class TicketCountSerializer(serializers.ModelSerializer):
+class TicketCountSerializer(serializers.Serializer):
+    month = serializers.SerializerMethodField()
+    ticket_count = serializers.IntegerField()
 
-    class Meta:
-        model = Ticket
-        fields = ['tic_id', 'tic_hora']
-
+    def get_month(self, obj):
+        # Extraer el número del mes a partir de la fecha
+        return obj['month'].month
+    
 # ------------- TARIFA SERIALIZERS -----------------
 
 class TarifaListSerializer(serializers.ModelSerializer):
