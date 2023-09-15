@@ -8,11 +8,9 @@ from rest_framework import generics, status
 
 from rest_framework.response import Response
 
-from django.db.models import Count
+from django.db.models import Count, Sum
 
 from django.db.models.functions import TruncMonth
-
-from datetime import datetime, timedelta
 
 # ------------- USERS SECTION -----------------
 
@@ -184,9 +182,41 @@ class TicketListDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketListSerializer
 
-class TicketCount(generics.ListAPIView):
-    queryset = Ticket.objects.annotate(month=TruncMonth('tic_fecha')).values('month').annotate(ticket_count=Count('tic_id')).order_by('month')
+class TicketCount(generics.ListAPIView):    
     serializer_class = TicketCountSerializer
+
+    def get_queryset(self):
+        # Crear el queryset para tu vista
+        queryset = Ticket.objects.annotate(month=TruncMonth('tic_fecha')).values('month').annotate(
+            ticket_count=Count('tic_id'),
+            total_earnings=Sum('tic_tarifa__tar_tarifa')
+        ).order_by('month')
+        
+        return queryset
+    
+    def get(self, request, *args, **kwargs):
+        meses = list(range(1, 13))
+        resultados = list(self.get_queryset())
+        resultados_finales = []
+    
+        for mes in meses:
+            mes_existente = next((item for item in resultados if item['month'].month == mes), None)
+            
+            if mes_existente:
+                resultados_finales.append({
+                    'month': mes_existente['month'].month,
+                    'ticket_count': mes_existente['ticket_count'],
+                    'total_earnings': mes_existente['total_earnings']
+                })
+            else:
+                resultados_finales.append({
+                    'month': mes,
+                    'ticket_count': 0,
+                    'total_earnings': 0
+                })
+        
+        return Response(resultados_finales)
+
 
 # ------------- TARIFA SECTION -----------------
       

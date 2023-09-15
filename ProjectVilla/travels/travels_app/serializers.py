@@ -73,6 +73,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 class TicketCountSerializer(serializers.Serializer):
     month = serializers.SerializerMethodField()
     ticket_count = serializers.IntegerField()
+    total_earnings = serializers.DecimalField(max_digits=10, decimal_places=2)
 
     def get_month(self, obj):
         # Extraer el número del mes a partir de la fecha
